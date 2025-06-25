@@ -63,7 +63,6 @@ $time = date('H:i:s');
   <!-- Background Image -->
   <div class="absolute inset-0 bg-cover bg-center opacity-20 dark:opacity-30 z-0"
        style="background-image: url('your-image-url.jpg');">
-       <!-- 👆 Replace 'your-image-url.jpg' with your custom image link -->
   </div>
 
   <!-- Main Content -->
@@ -118,6 +117,15 @@ $time = date('H:i:s');
         <li class="text-red-500">🔴 Gas level critical in Zone 3 (5 ppm at 14:03)</li>
         <li class="text-orange-400">🟠 Pressure high in Machine 5 (150 PSI at 13:59)</li>
       </ul>
+    </div>
+
+    <!-- LED Control Panel -->
+    <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg">
+      <h2 class="text-xl font-bold mb-4">💡 LED Control</h2>
+      <div class="flex space-x-4">
+        <button onclick="turnOn()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">Turn ON</button>
+        <button onclick="turnOff()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Turn OFF</button>
+      </div>
     </div>
 
     <!-- Factory Map -->
@@ -179,6 +187,21 @@ $time = date('H:i:s');
   document.getElementById('toggleDark').addEventListener('click', () => {
     document.documentElement.classList.toggle('dark');
   });
+
+  // LED Control Functions
+  function turnOn() {
+    fetch("http://192.168.137.144/off")
+      .then(response => response.text())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
+  }
+
+  function turnOff() {
+    fetch("http://192.168.137.144/on")
+      .then(response => response.text())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
+  }
 </script>
 
 </body>
