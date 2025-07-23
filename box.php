@@ -1,10 +1,9 @@
-<?php include 'menu.php'; ?>
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-100">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SenseBox — Live Data with Auto-Refresh</title>
+  <title>SenseBox — Live Data by Country</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,7 +14,10 @@
 
   <div class="bg-white p-6 rounded-lg shadow mb-6">
     <h1 class="text-3xl font-bold mb-2">SenseBox Live Data</h1>
-    <p class="text-gray-600">Auto-refresh every <span id="countdown" class="font-semibold">15</span> seconds.</p>
+    <p class="text-gray-600 mb-2">Auto-refresh every <span id="countdown" class="font-semibold">15</span> seconds.</p>
+    
+    <!-- Country Dropdown -->
+    <?php include 'menu.php'; ?>
   </div>
 
   <div id="boxContent">
@@ -29,6 +31,7 @@ let sensorChart = null;
 let map = null;
 let marker = null;
 let countdown = 15;
+let selectedCountry = 'germany';
 
 // Countdown timer and data fetcher
 function startAutoRefresh() {
@@ -37,15 +40,21 @@ function startAutoRefresh() {
     document.getElementById('countdown').textContent = countdown;
 
     if (countdown <= 0) {
-      fetchData();
+      fetchData(selectedCountry);
       countdown = 15;
     }
   }, 1000);
 }
 
-// Fetch API data from fetch_box.php
-function fetchData() {
-  fetch('fetch_box.php')
+// Handle country change
+function onCountryChange(select) {
+  selectedCountry = select.value;
+  fetchData(selectedCountry);
+}
+
+// Fetch API data from fetch_box.php?country=
+function fetchData(country) {
+  fetch(`fetch_box.php?country=${country}`)
     .then(response => response.json())
     .then(data => {
       if (data.error) {
@@ -60,7 +69,7 @@ function fetchData() {
     });
 }
 
-// Update page content: chart + map
+// Update page content
 function updatePage(data) {
   const content = `
     <div class="bg-white p-6 rounded-lg shadow mb-6">
@@ -117,8 +126,8 @@ function updatePage(data) {
   map.whenReady(() => map.invalidateSize());
 }
 
-// Initial fetch and start timer
-fetchData();
+// Initial fetch and timer start
+fetchData(selectedCountry);
 startAutoRefresh();
 </script>
 </body>

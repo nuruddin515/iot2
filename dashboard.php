@@ -46,7 +46,7 @@ $time = date('H:i:s');
 
 <div class="flex h-screen">
 
-  <!-- Sidebar Navigation -->
+  <!-- Sidebar -->
   <aside class="w-64 bg-gradient-to-b from-senseblue to-sensepurple text-white p-6 flex flex-col space-y-6 z-20">
     <div class="text-3xl font-bold">🌍 SenseBox</div>
     <nav class="flex flex-col space-y-4 text-lg mt-4">
@@ -60,10 +60,9 @@ $time = date('H:i:s');
     </div>
   </aside>
 
-  <!-- Background Image -->
+  <!-- Background -->
   <div class="absolute inset-0 bg-cover bg-center opacity-20 dark:opacity-30 z-0"
-       style="background-image: url('your-image-url.jpg');">
-  </div>
+       style="background-image: url('your-image-url.jpg');"></div>
 
   <!-- Main Content -->
   <main class="flex-1 p-8 overflow-auto space-y-8 relative z-10">
@@ -80,25 +79,35 @@ $time = date('H:i:s');
     </header>
 
     <!-- Sensor Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg text-center space-y-2 hover:scale-105 transition">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg text-center hover:scale-105 transition">
         <div class="text-5xl">🌡️</div>
         <div class="text-xl font-bold">Temperature</div>
-        <div class="text-2xl text-sensepink">24°C</div>
+        <div class="text-2xl text-sensepink" id="temperatureValue">-- °C</div>
       </div>
-      <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg text-center space-y-2 hover:scale-105 transition">
+      <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg text-center hover:scale-105 transition">
+        <div class="text-5xl">💧</div>
+        <div class="text-xl font-bold">Water Level</div>
+        <div class="text-2xl text-senseblue" id="waterLevelValue">-- cm</div>
+      </div>
+      <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg text-center hover:scale-105 transition">
         <div class="text-5xl">⛽</div>
         <div class="text-xl font-bold">Gas</div>
         <div class="text-2xl text-sensegreen">3 ppm</div>
       </div>
-      <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg text-center space-y-2 hover:scale-105 transition">
-        <div class="text-5xl">⚙️</div>
-        <div class="text-xl font-bold">Pressure</div>
-        <div class="text-2xl text-senseorange">150 PSI</div>
+    </div>
+
+    <!-- Sensor Management -->
+    <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg space-y-4">
+      <h2 class="text-xl font-bold mb-4">🛠️ Manage Sensors</h2>
+      <div class="flex flex-wrap gap-4">
+        <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">➕ Add Sensor</button>
+        <button class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition">✏️ Edit Sensor</button>
+        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">🗑️ Delete Sensor</button>
       </div>
     </div>
 
-    <!-- Charts Section -->
+    <!-- Charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg">
         <h2 class="text-xl font-bold mb-4">📊 Sensor Status Overview</h2>
@@ -110,16 +119,7 @@ $time = date('H:i:s');
       </div>
     </div>
 
-    <!-- Alerts Panel -->
-    <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg">
-      <h2 class="text-xl font-bold mb-4">📩 Alerts & Notifications</h2>
-      <ul class="space-y-2 text-base">
-        <li class="text-red-500">🔴 Gas level critical in Zone 3 (5 ppm at 14:03)</li>
-        <li class="text-orange-400">🟠 Pressure high in Machine 5 (150 PSI at 13:59)</li>
-      </ul>
-    </div>
-
-    <!-- LED Control Panel -->
+    <!-- LED Control -->
     <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg">
       <h2 class="text-xl font-bold mb-4">💡 LED Control</h2>
       <div class="flex space-x-4">
@@ -128,22 +128,19 @@ $time = date('H:i:s');
       </div>
     </div>
 
-    <!-- Factory Map -->
-    <div class="p-6 bg-white dark:bg-sensegray rounded-2xl shadow-lg">
-      <h2 class="text-xl font-bold mb-4">🗺️ Factory Floor Map</h2>
-      <div class="h-64 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded flex items-center justify-center text-gray-600 dark:text-gray-400">
-        [Interactive Map Placeholder]
-      </div>
-    </div>
-
   </main>
 
 </div>
 
-<!-- Chart.js Scripts -->
+<!-- Chart & Fetch Scripts -->
 <script>
-  const ctxStatus = document.getElementById('statusChart').getContext('2d');
-  new Chart(ctxStatus, {
+  // Dark Mode Toggle
+  document.getElementById('toggleDark').addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+  });
+
+  // Charts
+  const statusChart = new Chart(document.getElementById('statusChart'), {
     type: 'doughnut',
     data: {
       labels: ['🟢 Normal', '🟠 Warning', '🔴 Critical'],
@@ -154,53 +151,38 @@ $time = date('H:i:s');
     }
   });
 
-  const ctxTrend = document.getElementById('trendChart').getContext('2d');
-  new Chart(ctxTrend, {
+  const trendChart = new Chart(document.getElementById('trendChart'), {
     type: 'line',
     data: {
       labels: ['14:00', '14:05', '14:10', '14:15'],
       datasets: [
-        {
-          label: 'Temperature (°C)',
-          data: [24, 25, 24.5, 26],
-          borderColor: '#3b82f6',
-          fill: false
-        },
-        {
-          label: 'Pressure (PSI)',
-          data: [145, 150, 148, 152],
-          borderColor: '#f97316',
-          fill: false
-        },
-        {
-          label: 'Vibration (mm/s)',
-          data: [3, 3.5, 3.8, 4],
-          borderColor: '#22c55e',
-          fill: false
-        }
+        { label: 'Temperature (°C)', data: [24, 25, 24.5, 26], borderColor: '#3b82f6', fill: false },
+        { label: 'Pressure (PSI)', data: [145, 150, 148, 152], borderColor: '#f97316', fill: false }
       ]
     },
     options: { responsive: true, scales: { y: { beginAtZero: true } } }
   });
 
-  // Dark Mode Toggle
-  document.getElementById('toggleDark').addEventListener('click', () => {
-    document.documentElement.classList.toggle('dark');
-  });
-
-  // LED Control Functions
-  function turnOn() {
-    fetch("http://192.168.137.144/off")
-      .then(response => response.text())
-      .then(data => console.log(data))
-      .catch(error => console.error('Error:', error));
+  // Fetch Sensor Data from NodeMCU
+  function fetchSensorData() {
+    fetch("http://192.168.137.144/data")
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("temperatureValue").textContent = data.temperature + " °C";
+        document.getElementById("waterLevelValue").textContent = data.water_level + " cm";
+      })
+      .catch(err => console.error("Sensor data fetch failed:", err));
   }
 
+  setInterval(fetchSensorData, 5000);
+  fetchSensorData();
+
+  // LED Control
+  function turnOn() {
+    fetch("http://192.168.137.144/off").then(res => res.text()).then(console.log);
+  }
   function turnOff() {
-    fetch("http://192.168.137.144/on")
-      .then(response => response.text())
-      .then(data => console.log(data))
-      .catch(error => console.error('Error:', error));
+    fetch("http://192.168.137.144/on").then(res => res.text()).then(console.log);
   }
 </script>
 
